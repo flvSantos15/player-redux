@@ -2,8 +2,9 @@ import * as Collapsible from '@radix-ui/react-collapsible'
 
 import { ChevronDown } from 'lucide-react'
 import { Lesson } from './Lesson'
-import { useAppDispatch, useAppSelector } from '../store'
-import { play } from '../store/slices/player'
+// import { useAppDispatch, useAppSelector } from '../store'
+// import { play } from '../store/slices/player'
+import { useStore } from '../zustand-store'
 
 interface ModuleProps {
   title: string
@@ -12,17 +13,21 @@ interface ModuleProps {
 }
 
 export function Module({ title, amountOfLessons, moduleIndex }: ModuleProps) {
-  const dispacth = useAppDispatch()
-
-  const { currentModuleIndex, currentLessonIndex } = useAppSelector((state) => {
-    const { currentModuleIndex, currentLessonIndex } = state.player
-
-    return { currentModuleIndex, currentLessonIndex }
+  // const dispacth = useAppDispatch()
+  const { currentLessonIndex, currentModuleIndex, play, lessons } = useStore((store) => {
+    return {
+      currentLessonIndex: store.currentLessonIndex,
+      currentModuleIndex: store.currentModuleIndex,
+      play: store.play,
+      lessons: store.course?.modules[moduleIndex]?.lessons
+    }
   })
 
-  const lessons = useAppSelector(
-    (state) => state.player.course?.modules[moduleIndex].lessons
-  )
+  // const { currentModuleIndex, currentLessonIndex } = useAppSelector((state) => {
+  //   const { currentModuleIndex, currentLessonIndex } = state.player
+
+  //   return { currentModuleIndex, currentLessonIndex }
+  // })
 
   return (
     <Collapsible.Root className="group" defaultOpen={moduleIndex === 0}>
@@ -51,7 +56,8 @@ export function Module({ title, amountOfLessons, moduleIndex }: ModuleProps) {
                 key={lesson.id}
                 title={lesson.title}
                 duration={lesson.duration}
-                onPlay={() => dispacth(play([moduleIndex, lessonIndex]))}
+                // onPlay={() => dispacth(play([moduleIndex, lessonIndex]))}
+                onPlay={() => play([moduleIndex, lessonIndex])}
                 isCurrent={isCurrent}
               />
             )
